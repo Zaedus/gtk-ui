@@ -14,17 +14,19 @@ int main(int argc, char **argv)
     // Define option vars
     string input_file;
     string output_file;
+    string root_element;
 
     // Define options
     cxxopts::Options options{"gtkui", "Transpiler for the Gtk UI language"};
 
-    options.positional_help("[INPUT]");
+    options.positional_help("[INPUT] [...ROOT ARGS]");
     options.parse_positional({"input"});
 
     options.add_options()
         ("h,help", "Print usage")
         ("i,input", "Input file", cxxopts::value<string>(input_file))
-        ("o,output", "Output file", cxxopts::value<string>(output_file));
+        ("o,output", "Output file", cxxopts::value<string>(output_file))
+        ("r,root", "Root element", cxxopts::value<string>(root_element)->default_value("root"));
 
     try {
         // Parse options
@@ -39,7 +41,7 @@ int main(int argc, char **argv)
 
         // Parse
         Parser parser{input_file};
-        parser.parse();
+        parser.parse(root_element, result.unmatched());
     } catch (const cxxopts::OptionException& e) {
         cout << COLOR_ERROR << "error: " << COLOR_RESET << e.what() << endl;
         exit(EXIT_FAILURE);
