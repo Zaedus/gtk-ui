@@ -31,7 +31,9 @@ int main(int argc, char **argv)
             cout << options.help() << endl;
             exit(EXIT_SUCCESS);
         }
+        
     } catch (const cxxopts::OptionException& e) {
         cout << COLOR_ERROR << "error: " << COLOR_RESET << e.what() << endl;
+        exit(EXIT_SUCCESS);
     }
 }
