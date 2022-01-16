@@ -10,8 +10,8 @@ SOURCES := $(wildcard $(SRC)/*.cpp)
 OBJECTS := $(patsubst $(SRC)/%.cpp, $(OBJ)/%.o, $(SOURCES))
 HEADERS := $(wildcard $(SRC)/*.hpp)
 
-CFLAGS  := 
-LDFLAGS := -std=c++17 -lstdc++
+CFLAGS  := -std=c++17
+LDFLAGS := -lstdc++ -lstdc++fs
 
 debug: CFLAGS += -O0
 debug: $(BIN)
