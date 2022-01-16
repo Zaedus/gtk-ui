@@ -4,10 +4,6 @@
 #include <fstream>
 #include <iostream>
 
-using std::string;
-using std::fstream;
-using std::ios;
-
 class Parser
 {
 public:
@@ -15,5 +11,5 @@ public:
     void parse();
 
 private:
-    fstream stream;
+    std::fstream stream;
 };
