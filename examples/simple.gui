@@ -1,6 +1,6 @@
-@include "gtk-4.0"
+#include "gtk-4.0"
 
-#root {
+@root {
     GtkWindow {
         
         GtkBox {
