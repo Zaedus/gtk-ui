@@ -1,6 +1,7 @@
 #include "parser.hpp"
 
 using std::cout;
+using std::endl;
 using std::fstream;
 using std::string;
 using std::getline;
@@ -17,6 +18,6 @@ void Parser::parse()
 {
     string line;
     while(getline(stream, line)) {
-        
+        cout << line << endl;
     }
 }
