@@ -1,5 +1,6 @@
 #include "cxxopts.hpp"
 #include "colors.hpp"
+#include "parser.hpp"
 
 #include <iostream>
 #include <string>
@@ -10,6 +11,10 @@ using std::string;
 
 int main(int argc, char **argv)
 {
+    // Define option vars
+    string input_file;
+    string output_file;
+
     // Define options
     cxxopts::Options options{"gtkui", "Transpiler for the Gtk UI language"};
 
@@ -18,8 +23,8 @@ int main(int argc, char **argv)
 
     options.add_options()
         ("h,help", "Print usage")
-        ("i,input", "Input file", cxxopts::value<string>())
-        ("o,output", "Output file", cxxopts::value<string>());
+        ("i,input", "Input file", cxxopts::value<string>(input_file))
+        ("o,output", "Output file", cxxopts::value<string>(output_file));
 
     try {
         // Parse options
@@ -32,6 +37,9 @@ int main(int argc, char **argv)
             exit(EXIT_SUCCESS);
         }
 
+        // Parse
+        Parser parser{input_file};
+        parser.parse();
     } catch (const cxxopts::OptionException& e) {
         cout << COLOR_ERROR << "error: " << COLOR_RESET << e.what() << endl;
         exit(EXIT_FAILURE);
