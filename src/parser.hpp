@@ -7,7 +7,7 @@
 class Parser
 {
 public:
-    Parser(string input_file);
+    Parser(std::string input_file);
     void parse();
 
 private:
