@@ -13,6 +13,10 @@ HEADERS := $(wildcard $(SRC)/*.hpp)
 CFLAGS  := -std=c++17
 LDFLAGS := -lstdc++ -lstdc++fs
 
+LIBS 	:= fmt
+CFLAGS  += $(shell pkg-config --cflags $(LIBS))
+LDFLAGS += $(shell pkg-config --libs $(LIBS))
+
 debug: CFLAGS += -O0
 debug: $(BIN)
 
