@@ -42,7 +42,8 @@ void Parser::parse(string root_element, vector<string> args)
                 case ' ':
                     continue;
                 case '#': {
-                    if (state != ParsingState::DEFAULT) fail(fmt::format("Attempted to parse directive when parsing {}", ParsingStateStrings[state]));
+                    if (state != ParsingState::DEFAULT)
+                        fail_line(fmt::format("Attempted to parse directive when parsing {}", ParsingStateStrings[state]), line, filename, line_number, i);
                     state = ParsingState::DIRECTIVE;
                     ++i;
                     
@@ -57,7 +58,8 @@ void Parser::parse(string root_element, vector<string> args)
                     continue;
                 }
                 case '@': {
-                    if (state != ParsingState::DEFAULT) fail(fmt::format("Attempted to parse definition when parsing {}", ParsingStateStrings[state]));
+                    if (state != ParsingState::DEFAULT) 
+                        fail_line(fmt::format("Attempted to parse definition when parsing {}", ParsingStateStrings[state]), line, filename, line_number, i);
                     state = ParsingState::DEFINITION;
                     ++i;
 
@@ -67,9 +69,9 @@ void Parser::parse(string root_element, vector<string> args)
                     continue;
                 }
             }
-            cout << line[i];
+            // cout << line[i];
         }
-        cout << endl;
+        // cout << endl;
     }
 }
 
