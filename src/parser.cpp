@@ -106,8 +106,7 @@ void Parser::parse(string &root_element, vector<string> args)
                             if (args.size() != 2) 
                                 fail_line("Incorrect number of arguments in property definition", line, filename, line_number, i);
 
-                            current_definition->args.push_back(make_pair(args[0], args[1]));
-
+                            current_property = current_definition->props.insert({args[0], {args[1], false}}).first;
                             substate = ParsingSubState::PROPERTY;
                         }
                     }
@@ -147,6 +146,8 @@ void Parser::parse(string &root_element, vector<string> args)
                     continue;
                 }
                 case '.': {
+                    ++i;
+
                     if (substate == ParsingSubState::PROPERTY)
                     {
                         string function_name;
@@ -160,7 +161,9 @@ void Parser::parse(string &root_element, vector<string> args)
                             if (args.size() != 1)
                                 fail_line("Incorrect number of arguments", line, filename, line_number, i);
                             
+                            current_property->second.second = true;
 
+                            continue;
                         }
                         else fail_line(fmt::format("Unknown function '{}'", function_name), line, filename, line_number, i);
                     }
@@ -175,12 +178,20 @@ void Parser::parse(string &root_element, vector<string> args)
         cout << endl;
     }
 
-    cout << "Definitions: ";
+    cout << "---------------------------------------------------" << endl;
     for (auto &def : definitions)
     {
-        cout << def->name << ", ";
+        cout << "Title: " << def->name << endl;
+        cout << "Properties: " << endl;
+        for (auto &prop : def->props)
+        {
+            cout << prop.first << ": " << prop.second.first << " (Translatable: " << prop.second.second << ")" << endl;
+        }
+
+        cout << endl;
     }
-    cout << endl;
+
+    cout << "---------------------------------------------------" << endl;
 }
 
 string Parser::trim(const string& str)

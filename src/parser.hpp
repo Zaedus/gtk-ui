@@ -55,6 +55,7 @@ private:
 
     std::vector<Definition*> definitions;
     Definition *current_definition;
+    std::_Rb_tree_iterator<std::pair<const std::string, std::pair<std::string, bool>>> current_property;
     std::string filename;
     std::fstream stream;
     std::vector<std::string> libs;
