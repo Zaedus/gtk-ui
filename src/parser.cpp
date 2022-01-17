@@ -54,6 +54,8 @@ void Parser::parse(string &root_element, vector<string> args)
                     {
                         string name;
                         i += parse_string(line, i, name);
+
+                        bool found_lib = false;
                         
                         for (string& path : libs)
                         {
@@ -62,9 +64,12 @@ void Parser::parse(string &root_element, vector<string> args)
                             {
                                 Parser file_parser{file_path, libs};
                                 file_parser.parse(root_element, args);
+                                found_lib = true;
                                 break;
                             }
                         }
+
+                        if (!found_lib) fail_line(fmt::format("Library '{}' not found", substr), line, filename, line_number, i);
                     } 
                     else fail_line(fmt::format("Unknown directive '{}'", substr), line, filename, line_number, i);
                     continue;
