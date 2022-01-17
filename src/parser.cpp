@@ -13,7 +13,7 @@ using std::ios;
 
 namespace fs = std::filesystem;
 
-Parser::Parser(string input_path, vector<string> libs_path)
+Parser::Parser(string input_path, vector<string> &libs_path)
 : filename{input_path},
   stream{input_path, ios::in},
   state{ParsingState::DEFAULT}
@@ -47,41 +47,79 @@ void Parser::parse(string root_element, vector<string> args)
                     state = ParsingState::DIRECTIVE;
                     ++i;
                     
-                    string substr = line.substr(i, line.find(' ', i) - i);
+                    string substr;
+                    i += parse_to_char(line, ' ', i, substr);
+
                     if (substr == "include")
                     {
-                        i += 8;
-
                         string name;
                         i += parse_string(line, i, name);
-                    } else fail_line(fmt::format("Unknown directive '{}'", substr), line, filename, line_number, i);
+                        
+                        for (string& path : libs)
+                        {
+                            string file_path = fmt::format("{}/{}.gui", path, name);
+                            cout << file_path << endl;
+                            if (fs::exists(file_path))
+                            {
+                                cout << file_path << endl;
+                                Parser file_parser{file_path, libs};
+                                file_parser.parse(root_element, args);
+                                break;
+                            }
+                        }
+                    } 
+                    else fail_line(fmt::format("Unknown directive '{}'", substr), line, filename, line_number, i);
                     continue;
                 }
                 case '@': {
-                    if (state != ParsingState::DEFAULT) 
-                        fail_line(fmt::format("Attempted to parse definition when parsing {}", ParsingStateStrings[state]), line, filename, line_number, i);
-                    state = ParsingState::DEFINITION;
                     ++i;
 
+                    // Enables only special definitions like Prop
+                    if (state == ParsingState::DEFINITION)
+                    {
+                        string definition_name;
+                        i += parse_to_char(line, '(', i, definition_name);
+                        //cout << definition_name << endl;
+
+                    }
+                    // Only when defining a new object
+                    else if (state == ParsingState::DEFAULT)
+                    {
+                        state = ParsingState::DEFINITION;
+
+                        string definition_name;
+                        i += parse_to_char(line, '{', i, definition_name);
+                        
+                    }
+                    else fail_line(fmt::format("Attempted to parse definition when parsing {}", ParsingStateStrings[state]), line, filename, line_number, i);
                     
-
-
                     continue;
                 }
             }
-            // cout << line[i];
+            cout << line[i];
         }
-        // cout << endl;
+        cout << endl;
     }
+}
+
+string Parser::trim(const string& str)
+{
+    size_t first = str.find_first_not_of(' ');
+    if (string::npos == first)
+    {
+        return str;
+    }
+    size_t last = str.find_last_not_of(' ');
+    return str.substr(first, (last - first + 1));
 }
 
 size_t Parser::parse_between_chars(std::string &input, const char c1, const char c2, size_t position, std::string &result)
 {
     size_t start_pos = input.find(c1, position) + 1;
     size_t end_pos = input.find(c2, start_pos);
-    result = input.substr(start_pos, end_pos - start_pos);
+    result = trim(input.substr(start_pos, end_pos - start_pos));
 
-    return end_pos - start_pos + 1;
+    return end_pos - start_pos + 2;
 }
 
 size_t Parser::parse_string(std::string &input, size_t position, std::string &result)
@@ -92,7 +130,7 @@ size_t Parser::parse_string(std::string &input, size_t position, std::string &re
 size_t Parser::parse_to_char(string &input, const char c, size_t start_pos, std::string &result)
 {
     size_t end_pos = input.find(c, start_pos);
-    result = input.substr(start_pos, end_pos - start_pos);
+    result = trim(input.substr(start_pos, end_pos - start_pos));
 
     return end_pos - start_pos;
 }
