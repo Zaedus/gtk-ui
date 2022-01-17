@@ -30,7 +30,7 @@ int main(int argc, char **argv)
         ("i,input", "Input file", cxxopts::value<string>(input_file))
         ("o,output", "Output file", cxxopts::value<string>(output_file))
         ("r,root", "Root element", cxxopts::value<string>(root_element)->default_value("root"))
-        ("L,libs", "Library paths", cxxopts::value<vector<string>>(lib_paths));
+        ("L,lib", "Library paths", cxxopts::value<vector<string>>(lib_paths));
 
     try {
         // Parse options
