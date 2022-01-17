@@ -6,12 +6,21 @@ enum Alignment {
     auto
 }
 
+// GtkWindow
 @GtkWindow {
     @Prop("title", $title).translatable($translatable)
 }
 .children(1)
 .arg($title, string)
 
+// GtkBox
+@GtkBox {
+    @Prop("homogeneous", $homogeneous)
+}
+.children(-1) // Not defined
+.arg($homogeneous, bool)
+
+// GtkLabel
 @GtkLabel {
     @Prop("label", $label).translatable($translatable)
 }
