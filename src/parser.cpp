@@ -2,6 +2,7 @@
 #include "common.hpp"
 
 #include <fmt/format.h>
+#include <sstream>
 
 using std::cout;
 using std::endl;
@@ -10,6 +11,8 @@ using std::string;
 using std::vector;
 using std::getline;
 using std::ios;
+using std::stringstream;
+using std::pair;
 
 namespace fs = std::filesystem;
 
@@ -77,21 +80,33 @@ void Parser::parse(string &root_element, vector<string> args)
                 case '@': {
                     ++i;
 
-                    // Enables only special definitions like Prop
-                    if (state == ParsingState::DEFINITION)
+                    // Leave definition state
+                    if (state == ParsingState::DEFINITION_PROPS)
                     {
-                        string definition_name;
-                        i += parse_to_char(line, '(', i, definition_name);
+                        state = ParsingState::DEFAULT;
+                    }
+
+                    // Enables only special definitions like Prop
+                    if (state == ParsingState::DEFINITION_CONTENTS)
+                    {
+                        string modifier_name;
+                        i += parse_to_char(line, '(', i, modifier_name);
+                        
+                        // Prop(property_name, property_variable)
+                        if (modifier_name == "Prop")
+                        {
+                            vector<string> args;
+                            i += parse_function_args(line, i, args);
+                        }
                     }
                     // Only when defining a new object
                     else if (state == ParsingState::DEFAULT)
                     {
-                        state = ParsingState::DEFINITION;
+                        state = ParsingState::DEFINITION_CONTENTS;
 
                         string definition_name;
                         i += parse_to_char(line, '{', i, definition_name);
-                        // Add to some kind of definitions array and then set a member variable 
-                        // as a reference to the current definition being parsed
+
                         Definition* def = new Definition({
                             definition_name,    // Name
                             {},                 // Props
@@ -105,10 +120,28 @@ void Parser::parse(string &root_element, vector<string> args)
                     
                     continue;
                 }
+                case '}': {
+                    if (state == ParsingState::DEFINITION_CONTENTS)
+                    {
+                        state = ParsingState::DEFINITION_PROPS;
+                        current_definition = NULL;
+                        continue;
+                    }
+                }
+                // Comments
+                case '/': {
+                    if (line[i+1] == '/') i = line.length();
+                    continue;
+                }
             }
-            // cout << line[i];
+            cout << line[i];
         }
-        // cout << endl;
+        cout << endl;
+    }
+
+    for (auto &def : definitions)
+    {
+        cout << def->name << endl;
     }
 }
 
@@ -143,4 +176,17 @@ size_t Parser::parse_to_char(string &input, const char c, size_t start_pos, std:
     result = trim(input.substr(start_pos, end_pos - start_pos));
 
     return end_pos - start_pos;
+}
+
+size_t Parser::parse_function_args(std::string &input, size_t position, std::vector<string> &result)
+{
+    size_t length = input.find(')', position) - position;
+    stringstream ss{input.substr(position + 1, length - 1)};
+    string arg;
+
+    while (getline(ss, arg, ','))
+    {
+        result.push_back(trim(arg));
+    }
+    return length;
 }

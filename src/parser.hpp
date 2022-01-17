@@ -10,7 +10,8 @@
 enum ParsingState {
     DEFAULT,
     DIRECTIVE,
-    DEFINITION,
+    DEFINITION_CONTENTS,
+    DEFINITION_PROPS,
     ENUM
 };
 
@@ -39,6 +40,7 @@ private:
     size_t parse_between_chars(std::string &input, const char c1, const char c2, size_t position, std::string &result);
     size_t parse_string(std::string &input, size_t position, std::string &result);
     size_t parse_to_char(std::string &input, const char c, size_t position, std::string &result);
+    size_t parse_function_args(std::string &input, size_t position, std::vector<std::string> &result);
     std::string trim(const std::string &input);
 
     std::vector<Definition*> definitions;
