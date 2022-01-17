@@ -32,7 +32,7 @@ void Parser::parse(string root_element, vector<string> args)
     string line;
     size_t line_number = 0;
     while(getline(stream, line)) {
-        line_number ++;
+        line_number++;
         if (state == ParsingState::DIRECTIVE) state = ParsingState::DEFAULT;
 
         for (size_t i = 0; i < line.length(); ++i) {
@@ -53,7 +53,7 @@ void Parser::parse(string root_element, vector<string> args)
 
                         string name;
                         i += parse_string(line, i, name);
-                    } else fail_line(fmt::format("Unknown directive '{}'"), line, filename, line_number, i);
+                    } else fail_line(fmt::format("Unknown directive '{}'", substr), line, filename, line_number, i);
                     continue;
                 }
                 case '@': {
