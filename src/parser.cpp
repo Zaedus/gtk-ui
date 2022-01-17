@@ -94,11 +94,10 @@ void Parser::parse(string &root_element, vector<string> args)
                         // as a reference to the current definition being parsed
                         Definition* def = new Definition({
                             definition_name,    // Name
-                            {},                 // Children
                             {},                 // Props
                             {}                  // Args
                         });
-                        
+
                         current_definition = def;
                         definitions.push_back(def);
                     }

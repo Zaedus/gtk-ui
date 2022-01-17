@@ -25,7 +25,6 @@ typedef struct _parser_definition Definition;
 
 struct _parser_definition {
     std::string name;
-    std::vector<Definition> children;
     std::map<std::string, std::string> props;
     std::vector<std::pair<std::string, std::string>> args;
 };
