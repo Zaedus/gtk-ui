@@ -27,9 +27,12 @@ public:
     void parse(std::string root_element, std::vector<std::string> arguments);
 
 private:
-    size_t parse_string(std::string input, size_t position, std::string &result);
-    void fail(std::string reason);
 
+    size_t parse_between_chars(std::string &input, const char c1, const char c2, size_t position, std::string &result);
+    size_t parse_string(std::string &input, size_t position, std::string &result);
+    size_t parse_to_char(std::string &input, const char c, size_t position, std::string &result);
+
+    std::string filename;
     std::fstream stream;
     std::vector<std::string> libs;
     ParsingState state;

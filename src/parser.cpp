@@ -1,5 +1,5 @@
 #include "parser.hpp"
-#include "colors.hpp"
+#include "common.hpp"
 
 #include <fmt/format.h>
 
@@ -14,7 +14,8 @@ using std::ios;
 namespace fs = std::filesystem;
 
 Parser::Parser(string input_path, vector<string> libs_path)
-: stream{input_path, ios::in},
+: filename{input_path},
+  stream{input_path, ios::in},
   state{ParsingState::DEFAULT}
 {
     if (!stream.is_open())
@@ -29,7 +30,9 @@ Parser::Parser(string input_path, vector<string> libs_path)
 void Parser::parse(string root_element, vector<string> args)
 {
     string line;
+    size_t line_number = 0;
     while(getline(stream, line)) {
+        line_number ++;
         if (state == ParsingState::DIRECTIVE) state = ParsingState::DEFAULT;
 
         for (size_t i = 0; i < line.length(); ++i) {
@@ -38,10 +41,10 @@ void Parser::parse(string root_element, vector<string> args)
                 case '\t':
                 case ' ':
                     continue;
-                case '#':
+                case '#': {
                     if (state != ParsingState::DEFAULT) fail(fmt::format("Attempted to parse directive when parsing {}", ParsingStateStrings[state]));
-                    ++i;
                     state = ParsingState::DIRECTIVE;
+                    ++i;
                     
                     string substr = line.substr(i, line.find(' ', i) - i);
                     if (substr == "include")
@@ -50,8 +53,19 @@ void Parser::parse(string root_element, vector<string> args)
 
                         string name;
                         i += parse_string(line, i, name);
-                    }
+                    } else fail_line(fmt::format("Unknown directive '{}'"), line, filename, line_number, i);
                     continue;
+                }
+                case '@': {
+                    if (state != ParsingState::DEFAULT) fail(fmt::format("Attempted to parse definition when parsing {}", ParsingStateStrings[state]));
+                    state = ParsingState::DEFINITION;
+                    ++i;
+
+                    
+
+
+                    continue;
+                }
             }
             cout << line[i];
         }
@@ -59,17 +73,24 @@ void Parser::parse(string root_element, vector<string> args)
     }
 }
 
-size_t Parser::parse_string(std::string input, size_t position, std::string &result)
+size_t Parser::parse_between_chars(std::string &input, const char c1, const char c2, size_t position, std::string &result)
 {
-    size_t start_pos = input.find('"', position) + 1;
-    size_t end_pos = input.find('"', start_pos);
+    size_t start_pos = input.find(c1, position) + 1;
+    size_t end_pos = input.find(c2, start_pos);
     result = input.substr(start_pos, end_pos - start_pos);
 
     return end_pos - start_pos + 1;
 }
 
-void Parser::fail(string reason)
+size_t Parser::parse_string(std::string &input, size_t position, std::string &result)
 {
-    cout << COLOR_ERROR << "parsing error: " << COLOR_RESET << reason << endl;
-    exit(EXIT_FAILURE);
+    return parse_between_chars(input, '"', '"', position, result);
+}
+
+size_t Parser::parse_to_char(string &input, const char c, size_t start_pos, std::string &result)
+{
+    size_t end_pos = input.find(c, start_pos);
+    result = input.substr(start_pos, end_pos - start_pos);
+
+    return end_pos - start_pos;
 }
