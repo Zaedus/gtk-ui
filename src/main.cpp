@@ -4,10 +4,12 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
 
 using std::cout;
 using std::endl;
 using std::string;
+using std::vector;
 
 int main(int argc, char **argv)
 {
@@ -15,6 +17,7 @@ int main(int argc, char **argv)
     string input_file;
     string output_file;
     string root_element;
+    vector<string> lib_paths;
 
     // Define options
     cxxopts::Options options{"gtkui", "Transpiler for the Gtk UI language"};
@@ -26,7 +29,8 @@ int main(int argc, char **argv)
         ("h,help", "Print usage")
         ("i,input", "Input file", cxxopts::value<string>(input_file))
         ("o,output", "Output file", cxxopts::value<string>(output_file))
-        ("r,root", "Root element", cxxopts::value<string>(root_element)->default_value("root"));
+        ("r,root", "Root element", cxxopts::value<string>(root_element)->default_value("root"))
+        ("L,libs", "Library paths", cxxopts::value<vector<string>>(lib_paths));
 
     try {
         // Parse options
@@ -40,7 +44,7 @@ int main(int argc, char **argv)
         }
 
         // Parse
-        Parser parser{input_file};
+        Parser parser{input_file, lib_paths};
         parser.parse(root_element, result.unmatched());
     } catch (const cxxopts::OptionException& e) {
         cout << COLOR_ERROR << "error: " << COLOR_RESET << e.what() << endl;
