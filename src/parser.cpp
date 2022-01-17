@@ -13,7 +13,7 @@ using std::ios;
 
 namespace fs = std::filesystem;
 
-Parser::Parser(string input_path, vector<string> &libs_path)
+Parser::Parser(string &input_path, vector<string> &libs_path)
 : filename{input_path},
   stream{input_path, ios::in},
   state{ParsingState::DEFAULT}
@@ -27,7 +27,7 @@ Parser::Parser(string input_path, vector<string> &libs_path)
     }
 }
 
-void Parser::parse(string root_element, vector<string> args)
+void Parser::parse(string &root_element, vector<string> args)
 {
     string line;
     size_t line_number = 0;
@@ -58,10 +58,8 @@ void Parser::parse(string root_element, vector<string> args)
                         for (string& path : libs)
                         {
                             string file_path = fmt::format("{}/{}.gui", path, name);
-                            cout << file_path << endl;
                             if (fs::exists(file_path))
                             {
-                                cout << file_path << endl;
                                 Parser file_parser{file_path, libs};
                                 file_parser.parse(root_element, args);
                                 break;
@@ -79,8 +77,6 @@ void Parser::parse(string root_element, vector<string> args)
                     {
                         string definition_name;
                         i += parse_to_char(line, '(', i, definition_name);
-                        //cout << definition_name << endl;
-
                     }
                     // Only when defining a new object
                     else if (state == ParsingState::DEFAULT)
@@ -89,16 +85,17 @@ void Parser::parse(string root_element, vector<string> args)
 
                         string definition_name;
                         i += parse_to_char(line, '{', i, definition_name);
-                        
+                        // Add to some kind of definitions array and then set a member variable 
+                        // as a reference to the current definition being parsed
                     }
                     else fail_line(fmt::format("Attempted to parse definition when parsing {}", ParsingStateStrings[state]), line, filename, line_number, i);
                     
                     continue;
                 }
             }
-            cout << line[i];
+            // cout << line[i];
         }
-        cout << endl;
+        // cout << endl;
     }
 }
 
