@@ -7,12 +7,17 @@
 #include <filesystem>
 #include <map>
 
-enum ParsingState {
-    DEFAULT,
+enum class ParsingState {
+    NONE,
     DIRECTIVE,
     DEFINITION_CONTENTS,
     DEFINITION_PROPS,
     ENUM
+};
+
+enum class ParsingSubState {
+    NONE,
+    PROPERTY
 };
 
 static const char *ParsingStateStrings[] = {
@@ -26,7 +31,7 @@ typedef struct _parser_definition Definition;
 
 struct _parser_definition {
     std::string name;
-    std::map<std::string, std::string> props;
+    std::map<std::string, std::pair<std::string, bool>> props;
     std::vector<std::pair<std::string, std::string>> args;
 };
 
@@ -37,11 +42,16 @@ public:
     void parse(std::string &root_element, std::vector<std::string> arguments);
 
 private:
+
+    // Parsing Functions
     size_t parse_between_chars(std::string &input, const char c1, const char c2, size_t position, std::string &result);
     size_t parse_string(std::string &input, size_t position, std::string &result);
     size_t parse_to_char(std::string &input, const char c, size_t position, std::string &result);
     size_t parse_function_args(std::string &input, size_t position, std::vector<std::string> &result);
     std::string trim(const std::string &input);
+
+    // Util Functions
+    std::string get_state();
 
     std::vector<Definition*> definitions;
     Definition *current_definition;
@@ -49,4 +59,5 @@ private:
     std::fstream stream;
     std::vector<std::string> libs;
     ParsingState state;
+    ParsingSubState substate;
 };

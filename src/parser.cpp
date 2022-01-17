@@ -13,13 +13,15 @@ using std::getline;
 using std::ios;
 using std::stringstream;
 using std::pair;
+using std::make_pair;
 
 namespace fs = std::filesystem;
 
 Parser::Parser(string &input_path, vector<string> &libs_path)
 : filename{input_path},
   stream{input_path, ios::in},
-  state{ParsingState::DEFAULT}
+  state{ParsingState::NONE},
+  substate{ParsingSubState::NONE}
 {
     if (!stream.is_open())
         throw std::runtime_error{"File doesn't exist"};
@@ -36,7 +38,7 @@ void Parser::parse(string &root_element, vector<string> args)
     size_t line_number = 0;
     while(getline(stream, line)) {
         line_number++;
-        if (state == ParsingState::DIRECTIVE) state = ParsingState::DEFAULT;
+        if (state == ParsingState::DIRECTIVE) state = ParsingState::NONE;
 
         for (size_t i = 0; i < line.length(); ++i) {
             switch (line[i])
@@ -45,8 +47,8 @@ void Parser::parse(string &root_element, vector<string> args)
                 case ' ':
                     continue;
                 case '#': {
-                    if (state != ParsingState::DEFAULT)
-                        fail_line(fmt::format("Attempted to parse directive when parsing {}", ParsingStateStrings[state]), line, filename, line_number, i);
+                    if (state != ParsingState::NONE)
+                        fail_line(fmt::format("Attempted to parse directive when parsing {}", get_state()), line, filename, line_number, i);
                     state = ParsingState::DIRECTIVE;
                     ++i;
                     
@@ -83,7 +85,7 @@ void Parser::parse(string &root_element, vector<string> args)
                     // Leave definition state
                     if (state == ParsingState::DEFINITION_PROPS)
                     {
-                        state = ParsingState::DEFAULT;
+                        state = ParsingState::NONE;
                     }
 
                     // Enables only special definitions like Prop
@@ -95,12 +97,22 @@ void Parser::parse(string &root_element, vector<string> args)
                         // Prop(property_name, property_variable)
                         if (modifier_name == "Prop")
                         {
+                            substate = ParsingSubState::NONE;
+
                             vector<string> args;
                             i += parse_function_args(line, i, args);
+
+                            // Verify argument integrity
+                            if (args.size() != 2) 
+                                fail_line("Incorrect number of arguments in property definition", line, filename, line_number, i);
+
+                            current_definition->args.push_back(make_pair(args[0], args[1]));
+
+                            substate = ParsingSubState::PROPERTY;
                         }
                     }
                     // Only when defining a new object
-                    else if (state == ParsingState::DEFAULT)
+                    else if (state == ParsingState::NONE)
                     {
                         state = ParsingState::DEFINITION_CONTENTS;
 
@@ -116,7 +128,7 @@ void Parser::parse(string &root_element, vector<string> args)
                         current_definition = def;
                         definitions.push_back(def);
                     }
-                    else fail_line(fmt::format("Attempted to parse definition when parsing {}", ParsingStateStrings[state]), line, filename, line_number, i);
+                    else fail_line(fmt::format("Attempted to parse definition when parsing {}", get_state()), line, filename, line_number, i);
                     
                     continue;
                 }
@@ -124,6 +136,7 @@ void Parser::parse(string &root_element, vector<string> args)
                     if (state == ParsingState::DEFINITION_CONTENTS)
                     {
                         state = ParsingState::DEFINITION_PROPS;
+                        substate = ParsingSubState::NONE;
                         current_definition = NULL;
                         continue;
                     }
@@ -133,16 +146,41 @@ void Parser::parse(string &root_element, vector<string> args)
                     if (line[i+1] == '/') i = line.length();
                     continue;
                 }
+                case '.': {
+                    if (substate == ParsingSubState::PROPERTY)
+                    {
+                        string function_name;
+                        i += parse_to_char(line, '(', i, function_name);
+
+                        if (function_name == "translatable")
+                        {
+                            vector<string> args;
+                            i += parse_function_args(line, i, args);
+
+                            if (args.size() != 1)
+                                fail_line("Incorrect number of arguments", line, filename, line_number, i);
+                            
+
+                        }
+                        else fail_line(fmt::format("Unknown function '{}'", function_name), line, filename, line_number, i);
+                    }
+                    else if (state == ParsingState::DEFINITION_PROPS)
+                    {
+
+                    }
+                }
             }
             cout << line[i];
         }
         cout << endl;
     }
 
+    cout << "Definitions: ";
     for (auto &def : definitions)
     {
-        cout << def->name << endl;
+        cout << def->name << ", ";
     }
+    cout << endl;
 }
 
 string Parser::trim(const string& str)
@@ -189,4 +227,21 @@ size_t Parser::parse_function_args(std::string &input, size_t position, std::vec
         result.push_back(trim(arg));
     }
     return length;
+}
+
+string Parser::get_state()
+{
+    switch (state)
+    {
+        case ParsingState::NONE:
+            return "none";
+        case ParsingState::DEFINITION_CONTENTS:
+            return "definition contents";
+        case ParsingState::DEFINITION_PROPS:
+            return "definition properties";
+        case ParsingState::DIRECTIVE:
+            return "directive";
+        case ParsingState::ENUM:
+            return "enum";
+    };
 }
