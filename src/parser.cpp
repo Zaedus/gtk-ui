@@ -92,6 +92,15 @@ void Parser::parse(string &root_element, vector<string> args)
                         i += parse_to_char(line, '{', i, definition_name);
                         // Add to some kind of definitions array and then set a member variable 
                         // as a reference to the current definition being parsed
+                        Definition* def = new Definition({
+                            definition_name,    // Name
+                            {},                 // Children
+                            {},                 // Props
+                            {}                  // Args
+                        });
+                        
+                        current_definition = def;
+                        definitions.push_back(def);
                     }
                     else fail_line(fmt::format("Attempted to parse definition when parsing {}", ParsingStateStrings[state]), line, filename, line_number, i);
                     

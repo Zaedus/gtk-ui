@@ -42,7 +42,7 @@ private:
     size_t parse_to_char(std::string &input, const char c, size_t position, std::string &result);
     std::string trim(const std::string &input);
 
-    std::vector<Definition> definitions;
+    std::vector<Definition*> definitions;
     Definition *current_definition;
     std::string filename;
     std::fstream stream;
