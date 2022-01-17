@@ -43,6 +43,7 @@ private:
     std::string trim(const std::string &input);
 
     std::vector<Definition> definitions;
+    Definition *current_definition;
     std::string filename;
     std::fstream stream;
     std::vector<std::string> libs;
