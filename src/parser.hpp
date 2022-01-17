@@ -13,6 +13,13 @@ enum ParsingState {
     ENUM
 };
 
+static const char * ParsingStateStrings[] = {
+    "default",
+    "directive",
+    "definition",
+    "enum"
+};
+
 class Parser
 {
 public:
@@ -21,6 +28,7 @@ public:
 
 private:
     size_t parse_string(std::string input, size_t position, std::string &result);
+    void fail(std::string reason);
 
     std::fstream stream;
     std::vector<std::string> libs;

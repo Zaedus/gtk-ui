@@ -1,4 +1,7 @@
 #include "parser.hpp"
+#include "colors.hpp"
+
+#include <fmt/format.h>
 
 using std::cout;
 using std::endl;
@@ -36,6 +39,7 @@ void Parser::parse(string root_element, vector<string> args)
                 case ' ':
                     continue;
                 case '#':
+                    if (state != ParsingState::DEFAULT) fail(fmt::format("Attempted to parse directive when parsing {}", ParsingStateStrings[state]));
                     ++i;
                     state = ParsingState::DIRECTIVE;
                     
@@ -62,4 +66,10 @@ size_t Parser::parse_string(std::string input, size_t position, std::string &res
     result = input.substr(start_pos, end_pos - start_pos);
 
     return end_pos - start_pos + 1;
+}
+
+void Parser::fail(string reason)
+{
+    cout << COLOR_ERROR << "parsing error: " << COLOR_RESET << reason << endl;
+    exit(EXIT_FAILURE);
 }
