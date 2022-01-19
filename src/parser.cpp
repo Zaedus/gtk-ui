@@ -142,7 +142,11 @@ void Parser::parse(string &root_element, vector<string> args)
                 }
                 // Comments
                 case '/': {
-                    if (line[i+1] == '/') i = line.length();
+                    if (line[i+1] == '/') {
+                        i = line.length();
+                        break;
+                    }
+                    fail_line("Unknown symbol", line, filename, line_number, i);
                     continue;
                 }
                 case '.': {
