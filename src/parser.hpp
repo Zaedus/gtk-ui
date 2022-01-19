@@ -1,5 +1,7 @@
 #pragma once
 
+#include "variable.hpp"
+
 #include <string>
 #include <fstream>
 #include <iostream>
@@ -58,8 +60,8 @@ private:
     // Utils
     std::string get_state();
 
-
     std::vector<Definition*> definitions;
+    std::map<std::string, Variable> variables;
     Definition *current_definition;
     std::_Rb_tree_iterator<std::pair<const std::string, std::pair<std::string, bool>>> current_property;
     std::string filename;
