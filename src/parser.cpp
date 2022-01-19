@@ -58,7 +58,7 @@ void Parser::parse(string &root_element, vector<string> args)
                     if (substr == "include")
                     {
                         string name;
-                        i += parse_string(line, i, name);
+                        i += parse_value(line, name, i);
 
                         bool found_lib = false;
                         
@@ -169,7 +169,7 @@ void Parser::parse(string &root_element, vector<string> args)
                     }
                     else if (state == ParsingState::DEFINITION_PROPS)
                     {
-
+                        
                     }
                 }
             }
@@ -209,14 +209,12 @@ size_t Parser::parse_between_chars(std::string &input, const char c1, const char
 {
     size_t start_pos = input.find(c1, position) + 1;
     size_t end_pos = input.find(c2, start_pos);
+
+    if (start_pos == string::npos || end_pos == string::npos) throw std::runtime_error{""};
+
     result = trim(input.substr(start_pos, end_pos - start_pos));
 
     return end_pos - start_pos + 2;
-}
-
-size_t Parser::parse_string(std::string &input, size_t position, std::string &result)
-{
-    return parse_between_chars(input, '"', '"', position, result);
 }
 
 size_t Parser::parse_to_char(string &input, const char c, size_t start_pos, std::string &result)
@@ -255,4 +253,42 @@ string Parser::get_state()
         case ParsingState::ENUM:
             return "enum";
     };
+}
+
+size_t Parser::parse_value(std::string input, std::string &result, size_t position)
+{
+    return parse_between_chars(input, '"', '"', position, result);
+}
+
+size_t Parser::parse_value(std::string input, int &result, size_t position)
+{
+    input = input.substr(position);
+
+    try {
+        result = std::stoi(input);
+    } catch (std::invalid_argument e) {
+        throw std::runtime_error{"Value is not an integer"};
+    }
+
+    return input.length();
+}
+
+size_t Parser::parse_value(std::string input, bool &result, size_t position)
+{
+    input = input.substr(position);
+
+    if (input == "true") result = true;
+    else if (input == "false") result = false;
+    else throw std::runtime_error{"Value is not a boolean"};
+
+    return input.length();
+}
+
+size_t Parser::parse_variable(std::string input, std::string &result, size_t position)
+{
+    if (input[position] == '$')
+    {
+        
+    }
+    else throw std::runtime_error{"Value is not a variable"};
 }

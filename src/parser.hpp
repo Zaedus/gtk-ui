@@ -43,15 +43,21 @@ public:
 
 private:
 
-    // Parsing Functions
+    // String parsing
     size_t parse_between_chars(std::string &input, const char c1, const char c2, size_t position, std::string &result);
-    size_t parse_string(std::string &input, size_t position, std::string &result);
     size_t parse_to_char(std::string &input, const char c, size_t position, std::string &result);
     size_t parse_function_args(std::string &input, size_t position, std::vector<std::string> &result);
     std::string trim(const std::string &input);
 
-    // Util Functions
+    // Value parsing
+    size_t parse_value(std::string input, std::string &result, size_t position = 0);
+    size_t parse_value(std::string input, int &result, size_t position = 0);
+    size_t parse_value(std::string input, bool &result, size_t position = 0);
+    size_t parse_variable(std::string input, std::string &result, size_t position = 0);
+
+    // Utils
     std::string get_state();
+
 
     std::vector<Definition*> definitions;
     Definition *current_definition;
