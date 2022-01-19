@@ -1,18 +1,19 @@
 #include "variable.hpp"
 
-template <typename T>
-Variable<T>::Variable(std::string name, T default_value)
-: value{default_value}, name{name}
-{}
+using std::string;
+using std::any;
+using std::any_cast;
 
-template <typename T>
-void Variable<T>::set(T v)
+Variable::Variable(string name)
+: name{name} {}
+
+void Variable::set(any value)
 {
-    value = v;
+    value = value;
 }
 
 template <typename T>
-T Variable<T>::get()
+T Variable::get()
 {
-    return value;
+    return any_cast<T>(value);
 }

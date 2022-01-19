@@ -1,15 +1,18 @@
 #pragma once
 #include <string>
+#include <any>
 
-template <class T>
 class Variable
 {
 public:
-    Variable(std::string name, T default_value = NULL);
+    Variable(std::string name);
+    void set(std::any input);
+
+    template <typename T>
     T get();
-    void set(T);
 
 private:
-    T value;
+
+    std::any value;
     std::string name;
 };
