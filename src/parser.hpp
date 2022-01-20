@@ -57,6 +57,9 @@ private:
     size_t parse_value(std::string input, bool &result, size_t position = 0);
     size_t parse_variable(std::string input, std::string &result, size_t position = 0);
 
+    // Modifying state
+    Variable &define_variable(std::string name, std::string type);
+
     // Utils
     std::string get_state();
 

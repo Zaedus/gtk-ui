@@ -88,7 +88,7 @@ void Parser::parse(string &root_element, vector<string> args)
                         state = ParsingState::NONE;
                     }
 
-                    // Enables only special definitions like Prop
+                    // Enables only special definitions like Prop, Public, Private, and Arg
                     if (state == ParsingState::DEFINITION_CONTENTS)
                     {
                         string modifier_name;
@@ -102,12 +102,28 @@ void Parser::parse(string &root_element, vector<string> args)
                             vector<string> args;
                             i += parse_function_args(line, i, args);
 
-                            // Verify argument integrity
+                            // Verify arguments length
                             if (args.size() != 2) 
                                 fail_line("Incorrect number of arguments in property definition", line, filename, line_number, i);
 
                             current_property = current_definition->props.insert({args[0], {args[1], false}}).first;
                             substate = ParsingSubState::PROPERTY;
+                        }
+                        else if (modifier_name == "Arg")
+                        {
+                            substate = ParsingSubState::NONE;
+
+                            vector<string> args;
+                            i += parse_function_args(line, i, args);
+
+                            // Verify arguments length
+                            if (args.size() != 2)
+                                fail_line("Incorrect number of arguments in argument definition", line, filename, line_number, i);
+                            
+                            string var_name;
+                            i += parse_variable(args[0], var_name, 0);
+
+                            define_variable(var_name, args[1]);
                         }
                     }
                     // Only when defining a new object
@@ -192,6 +208,11 @@ void Parser::parse(string &root_element, vector<string> args)
             cout << prop.first << ": " << prop.second.first << " (Translatable: " << prop.second.second << ")" << endl;
         }
 
+        cout << endl << "Variables: " << endl;
+        for (auto &var : variables)
+        {
+            cout << var.first << ": " << var.second.get<string>() << endl;
+        }
         cout << endl;
     }
 
@@ -229,7 +250,7 @@ size_t Parser::parse_to_char(string &input, const char c, size_t start_pos, std:
     return end_pos - start_pos;
 }
 
-size_t Parser::parse_function_args(std::string &input, size_t position, std::vector<string> &result)
+size_t Parser::parse_function_args(string &input, size_t position, std::vector<string> &result)
 {
     size_t length = input.find(')', position) - position;
     stringstream ss{input.substr(position + 1, length - 1)};
@@ -259,12 +280,12 @@ string Parser::get_state()
     };
 }
 
-size_t Parser::parse_value(std::string input, std::string &result, size_t position)
+size_t Parser::parse_value(string input, string &result, size_t position)
 {
     return parse_between_chars(input, '"', '"', position, result);
 }
 
-size_t Parser::parse_value(std::string input, int &result, size_t position)
+size_t Parser::parse_value(string input, int &result, size_t position)
 {
     input = input.substr(position);
 
@@ -277,7 +298,7 @@ size_t Parser::parse_value(std::string input, int &result, size_t position)
     return input.length();
 }
 
-size_t Parser::parse_value(std::string input, bool &result, size_t position)
+size_t Parser::parse_value(string input, bool &result, size_t position)
 {
     input = input.substr(position);
 
@@ -288,11 +309,17 @@ size_t Parser::parse_value(std::string input, bool &result, size_t position)
     return input.length();
 }
 
-size_t Parser::parse_variable(std::string input, std::string &result, size_t position)
+size_t Parser::parse_variable(string input, string &result, size_t position)
 {
     if (input[position] == '$')
     {
-        
+        result = input.substr(position + 1, string::npos);
+        return result.length() + 1;
     }
     else throw std::runtime_error{"Value is not a variable"};
+}
+
+Variable &Parser::define_variable(string name, string type)
+{
+    return variables.insert(make_pair(name, Variable{name})).first->second;
 }
