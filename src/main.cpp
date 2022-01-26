@@ -45,7 +45,8 @@ int main(int argc, char **argv)
 
         // Parse
         Parser parser{input_file, lib_paths};
-        // parser.parse(root_element, result.unmatched());
+        cout << parser.parse(/*root_element, result.unmatched() */).value->number << endl;
+
     } catch (const cxxopts::OptionException& e) {
         cout << COLOR_ERROR << "error: " << COLOR_RESET << e.what() << endl;
         exit(EXIT_FAILURE);
