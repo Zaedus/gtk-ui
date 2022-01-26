@@ -7,9 +7,9 @@
 class Tokenizer
 {
 public:
-    Tokenizer(std::string input);
+    Tokenizer(std::string &input);
 
 private:
     long int cursor;
-    std::string input;
+    std::string &input;
 };
