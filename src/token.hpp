@@ -29,7 +29,6 @@ public:
     Token(long int n);
     Token(bool b);
 
-private:
     TokenType type;
     TokenValue *value;
 };
