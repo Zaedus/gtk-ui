@@ -1,24 +1,15 @@
 #pragma once
 
-#include <any>
+#include "token.hpp"
 
-enum TokenType
-{
-    STRING,
-    NUMBER
-};
-
-class Token
-{
-public:
-    
-
-private:
-    TokenType type;
-    std::any value;
-};
+#include <string>
 
 class Tokenizer
 {
-    
+public:
+    Tokenizer(std::string input);
+
+private:
+    long int cursor;
+    std::string input;
 };
