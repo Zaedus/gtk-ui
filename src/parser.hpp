@@ -9,7 +9,10 @@
 class Parser
 {
 private:
+    Token eat(TokenType type);
+
     std::string str;
+    Token lookahead;
     Tokenizer tokenizer;
 
 public:
