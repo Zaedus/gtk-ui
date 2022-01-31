@@ -8,8 +8,12 @@ class Tokenizer
 {
 public:
     Tokenizer(std::string &input);
+    Token get_next_token();
 
 private:
-    long int cursor;
+    constexpr bool has_more_tokens();
+    bool is_number(char c);
+    
+    size_t cursor;
     std::string &input;
 };
