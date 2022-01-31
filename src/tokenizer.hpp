@@ -12,8 +12,9 @@ public:
 
 private:
     constexpr bool has_more_tokens();
+    constexpr bool isEOF();
     bool is_number(char c);
-    
+
     size_t cursor;
     std::string &input;
 };

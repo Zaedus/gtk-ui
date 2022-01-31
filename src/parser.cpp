@@ -4,6 +4,7 @@
 
 #include <fstream>
 #include <fmt/format.h>
+#include <iostream>
 
 using std::string;
 using std::vector;
@@ -32,28 +33,41 @@ Token Parser::parse()
 
 Token Parser::program()
 {
-    return numberic_literal();
+    return literal();
 }
 
-Token Parser::numberic_literal()
+Token Parser::literal()
 {
-    const Token token = eat(NUMBER);
+    std::cout << "Type: " << Token::type_to_string(lookahead.type) << std::endl;
+    switch (lookahead.type)
+    {
+        case TokenType::NUMBER: 
+            return numeric_literal();
+        case TokenType::STRING: 
+            return string_literal();
+    }
+    throw std::runtime_error{fmt::format("Expected literal, literal not found")};
+}
+
+Token Parser::numeric_literal()
+{
+    const Token token = eat(TokenType::NUMBER);
+    return token;
+}
+
+Token Parser::string_literal()
+{
+    const Token token = eat(TokenType::STRING);
     return token;
 }
 
 Token Parser::eat(TokenType type)
 {
-    if (lookahead.type == type) throw std::runtime_error{fmt::format("Unexpected token: '{}', expected: '{}'", Token::type_to_string(lookahead.type), Token::type_to_string(type))};
-    switch(lookahead.type)
-    {
-        case TokenType::INTERNAL_NULL: {
-            throw std::runtime_error{fmt::format("Unexpected end of input, expected: '{}'", Token::type_to_string(type))};
-            break;
-        }
-        case TokenType::NUMBER: {
+    Token token = lookahead;
+    if (token.type != type) throw std::runtime_error{fmt::format("Unexpected token: '{}', expected: '{}'", Token::type_to_string(token.type), Token::type_to_string(type))};
+    else if (token.type == TokenType::INTERNAL_NULL) throw std::runtime_error{fmt::format("Unexpected end of input, expected: '{}'", Token::type_to_string(type))};
+    
+    lookahead = tokenizer.get_next_token();
 
-            break;
-        };
-    }
-
+    return token;
 }

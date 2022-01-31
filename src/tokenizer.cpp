@@ -1,9 +1,11 @@
 #include "tokenizer.hpp"
 
+#include <iostream>
+
 using std::string;
 
 Tokenizer::Tokenizer(std::string &input)
-: input{input}, cursor{0}
+: cursor{0}, input{input} 
 {}
 
 constexpr bool Tokenizer::has_more_tokens()
@@ -11,10 +13,15 @@ constexpr bool Tokenizer::has_more_tokens()
     return cursor < input.length();
 }
 
+constexpr bool Tokenizer::isEOF()
+{
+    return cursor == input.length();
+}
+
 Token Tokenizer::get_next_token()
 {
     if (!has_more_tokens()) 
-        return NULL;
+        return Token();
     
     const string segment = input.substr(cursor, string::npos);
 
@@ -25,9 +32,16 @@ Token Tokenizer::get_next_token()
         {
             number += segment[cursor++];
         }
-        return Token(std::stol(number));
+        return Token{std::stol(number)};
     }
-    return NULL;
+    else if (segment[0] == '"')
+    {
+        string str = "";
+        while (segment[cursor] != '"' && !isEOF())
+            str += segment[cursor++];
+        return Token{str};
+    }
+    return Token{};
 }
 
 bool Tokenizer::is_number(char c)

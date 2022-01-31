@@ -9,7 +9,16 @@
 class Parser
 {
 private:
+    // Util Functions
     Token eat(TokenType type);
+
+    /**
+     * Components
+     */
+    Token program();
+    Token literal();
+    Token numeric_literal();
+    Token string_literal();
 
     std::string str;
     Token lookahead;
@@ -19,11 +28,4 @@ public:
     Parser(std::string file, std::vector<std::string> libs);
 
     Token parse();
-
-    /**
-     * Components
-     */
-
-    Token program();
-    Token numberic_literal();
 };
