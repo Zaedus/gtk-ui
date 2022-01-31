@@ -4,7 +4,6 @@
 
 #include <fstream>
 #include <fmt/format.h>
-#include <iostream>
 
 using std::string;
 using std::vector;
@@ -38,7 +37,6 @@ Token Parser::program()
 
 Token Parser::literal()
 {
-    std::cout << "Type: " << Token::type_to_string(lookahead.type) << std::endl;
     switch (lookahead.type)
     {
         case TokenType::NUMBER: 
