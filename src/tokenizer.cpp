@@ -23,7 +23,7 @@ Token Tokenizer::get_next_token()
         string number = "";
         while (is_number(segment[cursor]))
         {
-            number += segment[cursor];
+            number += segment[cursor++];
         }
         return Token(std::stol(number));
     }
