@@ -1,0 +1,28 @@
+// @Prop should have a few different syntaxes
+// @Prop(name, variable) or @Prop(name, type)
+
+// Define variables
+// @Var($variable, type)
+// @Arg($variable, type)
+
+
+
+// You should be able to define arguments:
+// MyCustomObject("label", true, 10) {}
+// And properties:
+// MyCustomObject {}
+//  .custom_prop("deez", 100)
+// Propositions:
+@MyCustomObject {
+    @Arg($myarg, string) // Define argument that will be set like so: MyCustomObject("my value")
+    @Arg($myotherarg, "default value") // don't have to explicitly define type when using default value
+    @Public($myvar, string) // Define public variable that can be set with .myvar("my value")
+    @Public($myothervar, "default value") // Same thing here
+    @Private($myprivatevar, string) // Define a private variable. Useful for constants, but not sure what else. Thought I'd include just because
+
+    @Prop("custom_prop", $myarg).translatable(true)
+}
+
+// MyCustomObject("setting $myarg") {}
+//     .myvar("setting $myvar")
+//     .myprivatevar("can't set $myprivatevar")

@@ -9,22 +9,23 @@ enum Alignment {
 // GtkWindow
 @GtkWindow {
     @Prop("title", $title).translatable($translatable)
+    @Children(0)
+    @Arg($title, string)
 }
-.children(1)
-.arg($title, string)
 
 // GtkBox
 @GtkBox {
+    @Children(-1)
+    @Arg($homogeneous, bool)
     @Prop("homogeneous", $homogeneous)
 }
-.children(-1) // Not defined
-.arg($homogeneous, bool)
 
 // GtkLabel
 @GtkLabel {
+    @Children(1)
+    @Arg($label, string)
+    @Var($translatable, bool)
+
+    @Prop("align", Alignment)
     @Prop("label", $label).translatable($translatable)
 }
-.children(1)
-.arg($label, string)
-.prop($align, Alignment)
-.prop($translatable, bool)

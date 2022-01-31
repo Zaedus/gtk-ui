@@ -1,0 +1,19 @@
+#include"gtk-4.0"
+
+@root {
+    GtkWindow {
+        
+        GtkBox {
+            GtkLabel("Hello, world!")
+            .visible(true)
+            .align(.center)
+            .margin(.top, 10)
+            .margin(.bottom, 10)
+            .translatable(true)
+        }
+        .homogeneous(true)
+    }
+    .id("window1")
+    .title("Headlines", true)
+    .translatable(true)
+}
