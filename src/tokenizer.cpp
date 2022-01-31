@@ -1,7 +1,5 @@
 #include "tokenizer.hpp"
 
-#include <iostream>
-
 using std::string;
 
 Tokenizer::Tokenizer(std::string &input)
@@ -37,9 +35,11 @@ Token Tokenizer::get_next_token()
     else if (segment[0] == '"')
     {
         string str = "";
-        while (segment[cursor] != '"' && !isEOF())
-            str += segment[cursor++];
-        return Token{str};
+        do str += segment[cursor++];
+        while (segment[cursor] != '"' && !isEOF());
+        str += segment[cursor++];
+
+        return Token{str.c_str()};
     }
     return Token{};
 }
