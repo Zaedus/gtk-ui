@@ -45,7 +45,18 @@ int main(int argc, char **argv)
 
         // Parse
         Parser parser{input_file, lib_paths};
-        cout << parser.parse(/*root_element, result.unmatched() */).value->number << endl;
+        Token tree = parser.parse();
+        switch (tree.type)
+        {
+            case TokenType::STRING: {
+                cout << tree.value->string << endl;
+                break;
+            }
+            case TokenType::NUMBER: {
+                cout << tree.value->number << endl;
+                break;
+            }
+        }
 
     } catch (const cxxopts::OptionException& e) {
         cout << COLOR_ERROR << "error: " << COLOR_RESET << e.what() << endl;
