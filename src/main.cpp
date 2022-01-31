@@ -49,11 +49,11 @@ int main(int argc, char **argv)
         switch (tree.type)
         {
             case TokenType::STRING: {
-                cout << tree.value->string << endl;
+                cout << "Value: '" << tree.value->string << "'" << endl;
                 break;
             }
             case TokenType::NUMBER: {
-                cout << tree.value->number << endl;
+                cout << "Value: '" << tree.value->number << "'" << endl;
                 break;
             }
         }
