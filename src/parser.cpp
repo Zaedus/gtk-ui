@@ -10,6 +10,7 @@ using std::vector;
 using std::ifstream;
 
 Parser::Parser(string file, vector<string> libs)
+: tokenizer{str}
 {
     ifstream ifs(file);
     if(ifs.is_open())
@@ -34,5 +35,5 @@ Token Parser::program()
 
 Token Parser::numberic_literal()
 {
-    return Token(std::stol(str));
+    return tokenizer.get_next_token();
 }
