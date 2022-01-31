@@ -53,7 +53,15 @@ int main(int argc, char **argv)
                 break;
             }
             case TokenType::NUMBER: {
-                cout << "Value: '" << tree.value->number << "'" << endl;
+                cout << "Value: " << tree.value->number << endl;
+                break;
+            }
+            case TokenType::BOOL: {
+                cout << "Value: " << (tree.value->boolean ? "true" : "false") << endl;
+                break;
+            }
+            case TokenType::INTERNAL_NULL: {
+                cout << "Found a null token" << endl;
                 break;
             }
         }

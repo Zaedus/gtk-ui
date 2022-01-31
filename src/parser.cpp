@@ -43,6 +43,12 @@ Token Parser::literal()
             return numeric_literal();
         case TokenType::STRING: 
             return string_literal();
+        case TokenType::BOOL:
+            // return bool_literal();
+            break;
+        case TokenType::INTERNAL_NULL:
+            throw std::runtime_error{"Invalid token found"};
+            break;
     }
     throw std::runtime_error{fmt::format("Expected literal, literal not found")};
 }
