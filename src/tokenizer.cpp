@@ -34,10 +34,11 @@ Token Tokenizer::get_next_token()
     }
     else if (segment[0] == '"')
     {
+        ++cursor;
+
         string str = "";
         do str += segment[cursor++];
         while (segment[cursor] != '"' && !isEOF());
-        str += segment[cursor++];
 
         return Token{str.c_str()};
     }
