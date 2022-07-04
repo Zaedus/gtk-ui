@@ -1,5 +1,7 @@
 # gtk-ui
 
+## Switched languages and locations: [https://github.com/GtkUI/gtk-ui](https://github.com/GtkUI/gtk-ui)
+
 The intention of Gtk UI is to strike a compromise between purely GUI based UI development using Glade, which is discouraged by GNOME devs, and pure text based development, which is slow especially in XML. 
 
 This project is heavily inspired by Swift UI which just doesn't have an equivalent for GTK... yet.
